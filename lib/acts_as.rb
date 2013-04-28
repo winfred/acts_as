@@ -3,7 +3,7 @@ require "acts_as/version"
 module ActsAs
   class ActsAs::ActiveRecordOnly < StandardError; end
 
-  PREFIXED = %w(id created_at updated_at)
+  PREFIX = %w(id created_at updated_at)
   ACTING_FOR = {}
 
   def self.included(base)
@@ -20,7 +20,7 @@ module ActsAs
   end
 
   module ClassMethods
-    def acts_as(one_association, prefixed: [])
+    def acts_as(one_association, prefix: [], whitelist: [])
       define_method(one_association) do |*args|
         super(*args) || send("build_#{one_association}", *args)
       end
@@ -29,7 +29,7 @@ module ActsAs
       association_class = new.send(one_association).class
       if association_class.table_exists?
 
-        whitelist_and_delegate_fields(association_class, one_association, prefixed)
+        whitelist_and_delegate_fields(association_class, one_association, prefix, whitelist)
 
         define_method :method_missing do |method, *args, &block|
           if acts_as_field_match?(method) then
@@ -48,22 +48,22 @@ module ActsAs
 
     private
 
-    def whitelist_and_delegate_fields(association_class, one_association, prefixed)
-      association_fields = association_class.columns.map(&:name) - PREFIXED - prefixed
+    def whitelist_and_delegate_fields(association_class, one_association, prefix, whitelist)
+      association_fields = association_class.columns.map(&:name) - PREFIX - prefix + whitelist
 
-      build_prefixed_methods(one_association, prefixed)
+      build_prefix_methods(one_association, prefix)
 
       attr_accessible *association_fields
-      attr_accessible *prefixed.map { |field| "#{one_association}_#{field}" }
+      attr_accessible *prefix.map { |field| "#{one_association}_#{field}" }
 
       delegate(*(association_fields + association_fields.map { |field| "#{field}=" }), to: one_association)
 
       #TODO: This feels like a weird place to remember delegated fields
-      ACTING_FOR[one_association] = association_fields + prefixed
+      ACTING_FOR[one_association] = association_fields + prefix
     end
 
-    def build_prefixed_methods(one_association, prefixed)
-      prefixed.each do |field|
+    def build_prefix_methods(one_association, prefix)
+      prefix.each do |field|
         define_method("#{one_association}_#{field}") do |*args|
           send(one_association).send(field, *args)
         end

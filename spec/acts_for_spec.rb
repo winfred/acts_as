@@ -15,13 +15,17 @@ end
 
 class Clan < ActiveRecord::Base
   has_many :rebels
+
+  def delegate_at_will
+    '10'
+  end
 end
 
 class Rebel < User
   has_one :profile, class_name: 'RebelProfile', autosave: true
   belongs_to :clan, autosave: true
   acts_as :profile
-  acts_as :clan, prefixed: %w( name )
+  acts_as :clan, prefix: %w( name ), whitelist: %w( delegate_at_will )
 end
 
 class Imperial < User
@@ -35,6 +39,11 @@ describe ActsAs do
 
   let(:rebel) { Rebel.create(name: "Leia", clan_name: "Organa") }
   subject { rebel }
+
+  describe 'whitelist' do
+    it { should respond_to(:delegate_at_will) }
+    its(:delegate_at_will) { should == rebel.clan.delegate_at_will  }
+  end
 
   describe 'proxied getters and setters' do
     it { should respond_to(:strength) }
@@ -50,7 +59,7 @@ describe ActsAs do
     end
   end
 
-  describe 'prefixed fields' do
+  describe 'prefix fields' do
     it { should respond_to(:clan_name) }
     its(:clan_name) { should == rebel.clan.name }
   end

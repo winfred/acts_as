@@ -31,7 +31,7 @@ class Rebel < User
   has_one :profile, class_name: 'RebelProfile', autosave: true
   belongs_to :clan, autosave: true
   acts_as :profile
-  acts_as :clan, prefixed: %w( name )
+  acts_as :clan, prefix: %w( name ), whitelist: %w( delegate_at_will )
 end
 
 # table :clans
@@ -41,6 +41,10 @@ end
 #
 class Clan < ActiveRecord::Base
   has_many :rebels
+
+  def delegate_at_will
+    '10'
+  end
 end
 
 # table :rebel_profiles
@@ -68,6 +72,9 @@ Now a whole slew of methods related to ActiveRecord attributes are available for
 
     # Automagic boolean helpers
     rebel.cool? #=> rebel.clan.cool?
+
+    # Any method you want
+    rebel.delegate_at_will #=> '10'
 
 
 ## To be considered
