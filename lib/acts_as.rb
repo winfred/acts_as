@@ -4,7 +4,6 @@ module ActsAs
   class ActsAs::ActiveRecordOnly < StandardError; end
 
   PREFIX = %w(id created_at updated_at)
-  ACTING_FOR = {}
 
   def self.included(base)
     base.extend ClassMethods
@@ -13,7 +12,7 @@ module ActsAs
   private
 
   def acts_as_field_match?(method)
-    @association_match = ACTING_FOR.select do |association, fields|
+    @association_match = self.class.acts_as_fields.select do |association, fields|
       fields.select { |f| method.to_s.include?(f) }.any?
     end.keys.first
     @association_match && send(@association_match).respond_to?(method)
@@ -28,6 +27,10 @@ module ActsAs
         whitelist_and_delegate_fields(association_class, association, prefix, with)
         override_method_missing
       end
+    end
+
+    def acts_as_fields
+      @acts_as_fields ||= {}
     end
 
     private
@@ -57,7 +60,7 @@ module ActsAs
       delegate(*(association_fields + association_fields.map { |field| "#{field}=" }), to: one_association)
 
       #TODO: This feels like a weird place to remember delegated fields
-      ACTING_FOR[one_association] = association_fields + prefix
+      acts_as_fields[one_association] = association_fields + prefix
     end
 
     def build_prefix_methods(one_association, prefix)
