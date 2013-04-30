@@ -31,7 +31,7 @@ class Rebel < User
   has_one :profile, class_name: 'RebelProfile', autosave: true
   belongs_to :clan, autosave: true
   acts_as :profile
-  acts_as :clan, prefix: %w( name ), whitelist: %w( delegate_at_will )
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
 end
 
 # table :clans

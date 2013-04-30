@@ -20,36 +20,34 @@ module ActsAs
   end
 
   module ClassMethods
-    def acts_as(one_association, prefix: [], whitelist: [])
-      define_method(one_association) do |*args|
-        super(*args) || send("build_#{one_association}", *args)
-      end
+    def acts_as(association, with: [], prefix: [], foreign_key: true, **options)
+      foreign_key ? belongs_to(association, **options) : has_one(association, **options)
+      define_method(association) { |*args| super(*args) || send("build_#{association}", *args) }
 
-
-      association_class = new.send(one_association).class
-      if association_class.table_exists?
-
-        whitelist_and_delegate_fields(association_class, one_association, prefix, whitelist)
-
-        define_method :method_missing do |method, *args, &block|
-          if acts_as_field_match?(method) then
-            send(@association_match).send(method, *args, &block)
-          else
-            super(method, *args, &block)
-          end
-        end
-
-        define_method :respond_to? do |method, *args, &block|
-          acts_as_field_match?(method) || super(method, *args, &block)
-        end
+      if (association_class = new.send(association).class).table_exists?
+        whitelist_and_delegate_fields(association_class, association, prefix, with)
+        override_method_missing
       end
     end
 
-
     private
 
-    def whitelist_and_delegate_fields(association_class, one_association, prefix, whitelist)
-      association_fields = association_class.columns.map(&:name) - PREFIX - prefix + whitelist
+    def override_method_missing
+      define_method :method_missing do |method, *args, &block|
+        if acts_as_field_match?(method)
+          send(@association_match).send(method, *args, &block)
+        else
+          super(method, *args, &block)
+        end
+      end
+
+      define_method :respond_to? do |method, *args, &block|
+        acts_as_field_match?(method) || super(method, *args, &block)
+      end
+    end
+
+    def whitelist_and_delegate_fields(association_class, one_association, prefix, with)
+      association_fields = association_class.columns.map(&:name) - PREFIX - prefix + with
 
       build_prefix_methods(one_association, prefix)
 

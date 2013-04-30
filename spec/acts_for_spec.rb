@@ -22,15 +22,12 @@ class Clan < ActiveRecord::Base
 end
 
 class Rebel < User
-  has_one :profile, class_name: 'RebelProfile', autosave: true
-  belongs_to :clan, autosave: true
-  acts_as :profile
-  acts_as :clan, prefix: %w( name ), whitelist: %w( delegate_at_will )
+  acts_as :profile, foreign_key: false, class_name: 'RebelProfile', autosave: true
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
 end
 
 class Imperial < User
-  has_one :profile, class_name: 'ImperialProfile'
-  acts_as :profile
+  acts_as :profile, class_name: 'ImperialProfile'
 end
 
 
@@ -40,7 +37,7 @@ describe ActsAs do
   let(:rebel) { Rebel.create(name: "Leia", clan_name: "Organa") }
   subject { rebel }
 
-  describe 'whitelist' do
+  describe 'with' do
     it { should respond_to(:delegate_at_will) }
     its(:delegate_at_will) { should == rebel.clan.delegate_at_will  }
   end
