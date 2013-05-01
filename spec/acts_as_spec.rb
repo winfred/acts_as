@@ -22,20 +22,24 @@ class Clan < ActiveRecord::Base
 end
 
 class Rebel < User
-  acts_as :profile, :has_one, class_name: 'RebelProfile', autosave: true
-  acts_as :clan, :belongs_to, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
+  acts_as :profile, class_name: 'RebelProfile', autosave: true
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
 end
 
 class Imperial < User
   acts_as :profile, class_name: 'ImperialProfile'
 end
 
-
-
 describe ActsAs do
 
   let(:rebel) { Rebel.create(name: "Leia", clan_name: "Organa") }
   subject { rebel }
+
+  it 'raises exception for non-ActiveRecord::Base extensions' do
+    expect {
+      class MyObject; include ActsAs; end
+    }.to raise_error(ActsAs::ActiveRecordOnly)
+  end
 
   describe 'with' do
     it { should respond_to(:delegate_at_will) }

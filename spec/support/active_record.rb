@@ -8,17 +8,16 @@ ActiveRecord::Migration.create_table :users do |t|
   t.string :name
   t.string :type
   t.integer :clan_id
+  t.integer :profile_id
   t.timestamps
 end
 
 ActiveRecord::Migration.create_table :rebel_profiles do |t|
-  t.integer :rebel_id
   t.string :serial_data
   t.timestamps
 end
 
 ActiveRecord::Migration.create_table :imperial_profiles do |t|
-  t.integer :imperial_id
   t.string :analog_data
   t.timestamps
 end

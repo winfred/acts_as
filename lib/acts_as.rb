@@ -6,6 +6,7 @@ module ActsAs
   PREFIX = %w(id created_at updated_at)
 
   def self.included(base)
+    raise ActiveRecordOnly unless base < ActiveRecord::Base
     base.extend ClassMethods
   end
 
