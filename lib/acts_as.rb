@@ -19,8 +19,8 @@ module ActsAs
   end
 
   module ClassMethods
-    def acts_as(association, with: [], prefix: [], foreign_key: true, **options)
-      foreign_key ? belongs_to(association, **options) : has_one(association, **options)
+    def acts_as(association, type = :belongs_to, with: [], prefix: [], **options)
+      type == :belongs_to ? belongs_to(association, **options) : has_one(association, **options)
       define_method(association) { |*args| super(*args) || send("build_#{association}", *args) }
 
       if (association_class = new.send(association).class).table_exists?

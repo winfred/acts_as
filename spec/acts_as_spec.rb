@@ -22,8 +22,8 @@ class Clan < ActiveRecord::Base
 end
 
 class Rebel < User
-  acts_as :profile, foreign_key: false, class_name: 'RebelProfile', autosave: true
-  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
+  acts_as :profile, :has_one, class_name: 'RebelProfile', autosave: true
+  acts_as :clan, :belongs_to, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
 end
 
 class Imperial < User
