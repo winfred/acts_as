@@ -1,6 +1,6 @@
 # ActsAs
 
-ActiveRecord extension for easy 1:1 composition delegation
+ActiveRecord extension for easy belongs_to composition delegation
 
 ## Installation
 
@@ -20,18 +20,20 @@ Or install it yourself as:
 
 ```ruby
 
+# This pattern encourages foreign keys to be stored on the STI's root table for easy reads.
+#
 # table :users
 #   name :string
+#   clan_id :integer
+#   profile_id :integer
 #
 class User
   include ActsAs
 end
 
 class Rebel < User
-  has_one :profile, class_name: 'RebelProfile', autosave: true
-  belongs_to :clan, autosave: true
-  acts_as :profile
-  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
+  acts_as :profile, class_name: 'RebelProfile', autosave: true
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
 end
 
 # table :clans
@@ -48,11 +50,10 @@ class Clan < ActiveRecord::Base
 end
 
 # table :rebel_profiles
-#   rebel_id :integer
 #   serial_data :string
 #
 class RebelProfile < ActiveRecord::Base
-  belongs_to :rebel
+  has_one :rebel
 end
 
 ```
@@ -84,7 +85,7 @@ How does the active record join hash-parsing stuff work? EX-
     Rebel.joins(:clan).where(clan: {cool: true)
 
 Can we make this work for ruby-sql autojoins? Is that even a good idea?
-    Rebel.where(cool: true)
+    Rebel.where(cool: true) #auto-joins :clan
 
 ## Contributing
 
