@@ -20,8 +20,8 @@ module ActsAs
   end
 
   module ClassMethods
-    def acts_as(association, type = :belongs_to, with: [], prefix: [], **options)
-      type == :belongs_to ? belongs_to(association, **options) : has_one(association, **options)
+    def acts_as(association, with: [], prefix: [], **options)
+      belongs_to(association, **options.merge(autosave: true))
       define_method(association) { |*args| super(*args) || send("build_#{association}", *args) }
 
       if (association_class = new.send(association).class).table_exists?
@@ -60,7 +60,6 @@ module ActsAs
 
       delegate(*(association_fields + association_fields.map { |field| "#{field}=" }), to: one_association)
 
-      #TODO: This feels like a weird place to remember delegated fields
       acts_as_fields[one_association] = association_fields + prefix
     end
 

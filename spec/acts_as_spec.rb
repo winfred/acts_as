@@ -6,11 +6,11 @@ class User < ActiveRecord::Base
 end
 
 class RebelProfile < ActiveRecord::Base
-  belongs_to :rebel
+  has_one :rebel
 end
 
 class ImperialProfile < ActiveRecord::Base
-  belongs_to :imperial
+  has_one :imperial
 end
 
 class Clan < ActiveRecord::Base
@@ -22,8 +22,8 @@ class Clan < ActiveRecord::Base
 end
 
 class Rebel < User
-  acts_as :profile, class_name: 'RebelProfile', autosave: true
-  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
+  acts_as :profile, class_name: 'RebelProfile'
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
 end
 
 class Imperial < User
@@ -44,6 +44,10 @@ describe ActsAs do
   describe 'with' do
     it { should respond_to(:delegate_at_will) }
     its(:delegate_at_will) { should == rebel.clan.delegate_at_will  }
+    it 'actually calls the method on the associated object' do
+      rebel.clan.should_receive(:delegate_at_will).once
+      rebel.delegate_at_will
+    end
   end
 
   describe 'proxied getters and setters' do
