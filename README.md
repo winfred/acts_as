@@ -1,7 +1,5 @@
 # ActsAs
 
-ActiveRecord extension for easy belongs_to composition and delegation
-
 * Transparently write to multiple tables from one active record model by proxying attributes and their methods through a second model.
 * Easily extract a new table from an existing table, but keep the existing API intact without breaking any consumers.
 * When using STI to maintain easy joins, this is an easy way to proxy unique child attributes through to another table for that child
@@ -16,13 +14,9 @@ Add this line to your application's Gemfile:
 
     gem 'acts_as'
 
-And then execute:
+And then:
 
     $ bundle
-
-Or install it yourself as:
-
-    $ gem install acts_as
 
 ## Usage
 
@@ -93,7 +87,8 @@ How does the active record join hash-parsing stuff work? EX-
     Rebel.joins(:clan).where(clan: {cool: true)
 
 Can we make this work for ruby-sql autojoins? Is that even a good idea?
-    Rebel.where(cool: true) #auto-joins :clan
+
+    Rebel.where(cool: true) #auto-joins :clan and queries clans table
 
 ## Contributing
 
