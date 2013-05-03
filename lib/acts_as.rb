@@ -24,7 +24,7 @@ module ActsAs
       belongs_to(association, **options.merge(autosave: true))
       define_method(association) { |*args| super(*args) || send("build_#{association}", *args) }
 
-      if (association_class = new.send(association).class).table_exists?
+      if (association_class = (options[:class_name] || association).to_s.camelcase.constantize).table_exists?
         whitelist_and_delegate_fields(association_class, association, prefix, with)
         override_method_missing
       end
