@@ -1,8 +1,11 @@
 # ActsAs
 
+Essentially, this is just a wrapper around the usual [ActiveRecord::Assocations::Classmethods#belongs_to](http://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html#method-i-belongs_to) that inlines delegation of all active_record attribute setters/getters/helpers (with prefix support) and any additional methods, thus serving as a proxy for another table and model.
+
 * Transparently write to multiple tables from one active record model by proxying attributes and their methods through a second model.
 * Easily extract a new table from an existing table, but keep the existing API intact without breaking any consumers.
 * When using STI to maintain easy joins, this is an easy way to proxy unique child attributes through to another table for that child
+* Can help you enforce the [Law of Demeter](http://en.wikipedia.org/wiki/Law_of_Demeter)
 
 This is designed for any belongs_to relationship where lifecycles are tightly coupled and proxying of attribute helpers from belongs_to -> has_one is desired.
 
