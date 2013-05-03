@@ -1,6 +1,14 @@
 # ActsAs
 
-ActiveRecord extension for easy belongs_to composition delegation
+ActiveRecord extension for easy belongs_to composition and delegation
+
+* Transparently write to multiple tables from one active record model by proxying attributes and their methods through a second model.
+* Easily extract a new table from an existing table, but keep the existing API intact without breaking any consumers.
+* When using STI to maintain easy joins, this is an easy way to proxy unique child attributes through to another table for that child
+
+This is designed for any belongs_to relationship where lifecycles are tightly coupled and proxying of attribute helpers from belongs_to -> has_one is desired.
+
+(see example below and /spec for more detail)
 
 ## Installation
 
@@ -32,8 +40,8 @@ class User
 end
 
 class Rebel < User
-  acts_as :profile, class_name: 'RebelProfile', autosave: true
-  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will ), autosave: true
+  acts_as :profile, class_name: 'RebelProfile'
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
 end
 
 # table :clans
@@ -78,7 +86,7 @@ Now a whole slew of methods related to ActiveRecord attributes are available for
     rebel.delegate_at_will #=> '10'
 
 
-## To be considered
+## Roadmap / Ideas
 
 How does the active record join hash-parsing stuff work? EX-
 
