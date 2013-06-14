@@ -82,4 +82,13 @@ describe ActsAs do
     it { should respond_to(:cool?)}
     specify { rebel.should_not be_cool }
   end
+
+  describe '#previous_changes' do
+    it 'should account for acted models' do
+      rebel.strength = 12
+      rebel.name = 'bob'
+      rebel.save
+      rebel.previous_changes.should include('strength')
+    end
+  end
 end

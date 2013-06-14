@@ -10,6 +10,13 @@ module ActsAs
     base.extend ClassMethods
   end
 
+  def previous_changes
+    self.class.acts_as_fields.keys.map{ |association| send(association).previous_changes }
+      .reduce(super) do |current, association_changes|
+        current.merge(association_changes)
+      end
+  end
+
   private
 
   def acts_as_field_match?(method)
