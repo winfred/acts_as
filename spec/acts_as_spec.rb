@@ -91,4 +91,11 @@ describe ActsAs do
       rebel.previous_changes.should include('strength')
     end
   end
+
+  describe '#update_column' do
+    it 'should pass through to acted models' do
+      rebel.update_column :strength, 23
+      rebel.strength.should == 23
+    end
+  end
 end

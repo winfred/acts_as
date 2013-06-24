@@ -17,6 +17,14 @@ module ActsAs
       end
   end
 
+  def update_column(name, value)
+    if (association = self.class.acts_as_fields.detect { |k,v| v.include?(name.to_s) }.try(:first)).present?
+      send(association).update_column name, value
+    else
+      super
+    end
+  end
+
   private
 
   def acts_as_field_match?(method)
