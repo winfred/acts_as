@@ -25,12 +25,8 @@ module ActsAs
     end
   end
 
-  private
-
   def acts_as_field_match?(method)
-    @association_match = self.class.acts_as_fields.select do |association, fields|
-      fields.select { |f| method.to_s.include?(f) }.any?
-    end.keys.first
+    @association_match = self.class.acts_as_fields_match(method)
     @association_match && send(@association_match).respond_to?(method)
   end
 
@@ -47,6 +43,37 @@ module ActsAs
 
     def acts_as_fields
       @acts_as_fields ||= {}
+    end
+
+    def acts_as_fields_match(method)
+      acts_as_fields.select do |association, fields|
+        fields.select { |f| method.to_s.include?(f) }.any?
+      end.keys.first
+    end
+
+    def where(opts, *rest)
+      return self if opts.blank?
+      relation = super
+      #TODO support nested attribute joins like Guns.where(rebels: {strength: 10}))
+      # for now, only first level joins will happen automagically
+      detected_associations = opts.keys.map {|attr| acts_as_fields_match(attr) }
+                                       .reject {|attr| attr.nil?}
+      return relation.joins(detected_associations) if detected_associations.any?
+      relation
+    end
+
+    def expand_hash_conditions_for_aggregates(attrs)
+      attrs = super(attrs)
+      expanded_attrs = {}
+
+      attrs.each do |attr, value|
+        if (association = acts_as_fields_match(attr))
+          expanded_attrs[new.send(association).class.table_name] = { attr => value }
+        else
+          expanded_attrs[attr] = value
+        end
+      end
+      expanded_attrs
     end
 
     private

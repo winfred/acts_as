@@ -21,6 +21,10 @@ class Clan < ActiveRecord::Base
   end
 end
 
+class XWing < ActiveRecord::Base
+  belongs_to :rebel
+end
+
 class Rebel < User
   acts_as :profile, class_name: 'RebelProfile'
   acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
@@ -96,6 +100,19 @@ describe ActsAs do
     it 'should pass through to acted models' do
       rebel.update_column :strength, 23
       rebel.strength.should == 23
+    end
+  end
+
+  describe 'automagic .where hash syntax helpers' do
+    it 'should auto-expand acted attributes' do
+      Rebel.where(strength: rebel.strength).should include(rebel)
+      Rebel.where(strength: rebel.strength, name: 'Jimbo').should_not include(rebel)
+    end
+
+    it 'should auto-expand acted attribuets that are nested as well' do
+      pending 'support nested attributes'
+      xwing = XWing.create!(rebel: rebel)
+      XWing.joins(rebel: :clan).where(rebel: {strength: rebel.strength}).should include(xwing)
     end
   end
 end

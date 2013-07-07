@@ -28,3 +28,8 @@ ActiveRecord::Migration.create_table :clans do |t|
   t.boolean :cool
   t.timestamps
 end
+
+ActiveRecord::Migration.create_table :x_wings do |t|
+  t.integer :rebel_id
+  t.timestamps
+end
