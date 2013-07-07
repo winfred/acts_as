@@ -56,9 +56,11 @@ module ActsAs
       relation = super
       #TODO support nested attribute joins like Guns.where(rebels: {strength: 10}))
       # for now, only first level joins will happen automagically
-      detected_associations = opts.keys.map {|attr| acts_as_fields_match(attr) }
-                                       .reject {|attr| attr.nil?}
-      return relation.joins(detected_associations) if detected_associations.any?
+      if opts.is_a? Hash
+        detected_associations = opts.keys.map {|attr| acts_as_fields_match(attr) }
+                                         .reject {|attr| attr.nil?}
+        return relation.joins(detected_associations) if detected_associations.any?
+      end
       relation
     end
 

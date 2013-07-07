@@ -104,9 +104,12 @@ describe ActsAs do
   end
 
   describe 'automagic .where hash syntax helpers' do
-    it 'should auto-expand acted attributes' do
+    it 'should auto-expand acted hash attributes' do
       Rebel.where(strength: rebel.strength).should include(rebel)
       Rebel.where(strength: rebel.strength, name: 'Jimbo').should_not include(rebel)
+      expect {
+        Rebel.where('strength = ?', 12).any?
+      }.to raise_error(ActiveRecord::StatementInvalid)
     end
 
     it 'should auto-expand acted attribuets that are nested as well' do
