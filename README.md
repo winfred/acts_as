@@ -82,16 +82,15 @@ Now a whole slew of methods related to ActiveRecord attributes are available for
     # Any method you want
     rebel.delegate_at_will #=> '10'
 
+## Automagical joins through .where Hash syntax
 
-## Roadmap / Ideas
+    Just get to what you want
 
-How does the active record join hash-parsing stuff work? EX-
+```ruby
+    Rebel.where(strength: 10) #=> the same as Rebel.joins(:clan).where(clan: {strength: 10)
+```
 
-    Rebel.joins(:clan).where(clan: {cool: true)
-
-Can we make this work for ruby-sql autojoins? Is that even a good idea?
-
-    Rebel.where(cool: true) #auto-joins :clan and queries clans table
+    One major caveat, it only works for first-level attributes at the moment. (see pending spec)
 
 ## Contributing
 
