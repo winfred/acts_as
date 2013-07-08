@@ -110,9 +110,11 @@ describe ActsAs do
       expect {
         Rebel.where('strength = ?', 12).any?
       }.to raise_error(ActiveRecord::StatementInvalid)
+
+      Rebel.where(name: rebel.name).should include(rebel)
     end
 
-    it 'should auto-expand acted attribuets that are nested as well' do
+    it 'should auto-expand acted attributes that are nested as well' do
       pending 'support nested attributes'
       xwing = XWing.create!(rebel: rebel)
       XWing.joins(rebel: :clan).where(rebel: {strength: rebel.strength}).should include(xwing)

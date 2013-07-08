@@ -69,7 +69,7 @@ module ActsAs
       expanded_attrs = {}
 
       attrs.each do |attr, value|
-        if (association = acts_as_fields_match(attr))
+        if (association = acts_as_fields_match(attr)) && !self.columns.map(&:name).include?(attr.to_s)
           expanded_attrs[new.send(association).class.table_name] = { attr => value }
         else
           expanded_attrs[attr] = value
