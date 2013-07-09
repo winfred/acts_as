@@ -35,7 +35,7 @@ module ActsAs
       belongs_to(association, **options.merge(autosave: true))
       define_method(association) do |*args|
         acted = super(*args) || send("build_#{association}", *args)
-        acted.save(validate: false) unless acted.persisted?
+        acted.save if persisted? && acted.new_record?
         acted
       end
 
