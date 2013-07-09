@@ -33,7 +33,11 @@ module ActsAs
   module ClassMethods
     def acts_as(association, with: [], prefix: [], **options)
       belongs_to(association, **options.merge(autosave: true))
-      define_method(association) { |*args| super(*args) || send("build_#{association}", *args) }
+      define_method(association) do |*args|
+        acted = super(*args) || send("build_#{association}", *args)
+        acted.save(validate: false) unless acted.persisted?
+        acted
+      end
 
       if (association_class = (options[:class_name] || association).to_s.camelcase.constantize).table_exists?
         whitelist_and_delegate_fields(association_class, association, prefix, with)

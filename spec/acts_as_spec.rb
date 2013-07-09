@@ -45,6 +45,24 @@ describe ActsAs do
     }.to raise_error(ActsAs::ActiveRecordOnly)
   end
 
+  describe 'automatic association building' do
+    describe 'when acted model has already been created' do
+      it 'retrieves it from the database' do
+        rebel.profile.serial_data = '123'
+        rebel.save
+        rebel.reload.profile.serial_data.should == '123'
+      end
+    end
+
+    describe 'when acted model has not been created' do
+      it 'creates it empty automatically' do
+        expect {
+          rebel.profile.should be_persisted
+        }.to change(RebelProfile, :count).by(1)
+      end
+    end
+  end
+
   describe 'with' do
     it { should respond_to(:delegate_at_will) }
     its(:delegate_at_will) { should == rebel.clan.delegate_at_will  }
