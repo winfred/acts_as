@@ -61,6 +61,16 @@ describe ActsAs do
         }.to change(RebelProfile, :count).by(1)
       end
     end
+
+    describe 'when host model is not persisted' do
+      let(:rebel) { Rebel.new(name: "Bail", clan_name: "Oranga") }
+
+      it 'does not persist the acted model' do
+        expect {
+          rebel.profile.should_not be_persisted
+        }.to_not change(RebelProfile, :count)
+      end
+    end
   end
 
   describe 'with' do
