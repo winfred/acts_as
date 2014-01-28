@@ -30,6 +30,11 @@ class Rebel < User
   acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
 end
 
+class RebelWithStrongParams < User
+  include ActiveModel::ForbiddenAttributesProtection
+  acts_as :clan, prefix: %w( name ), with: %w( delegate_at_will )
+end
+
 class Imperial < User
   acts_as :profile, class_name: 'ImperialProfile'
 end
@@ -113,6 +118,20 @@ describe ActsAs do
   describe 'boolean helpers' do
     it { should respond_to(:cool?)}
     specify { rebel.should_not be_cool }
+  end
+
+  describe 'making things attr_accessible' do
+    context 'when strong_parameters is not being used' do
+      it 'automatically makes attrs accessible' do
+        Rebel.accessible_attributes.should include('clan_name')
+      end
+    end
+
+    context 'when strong_parameters is being used' do
+      it 'does not use the attr_accessible api' do
+        RebelWithStrongParams.accessible_attributes.should be_empty
+      end
+    end
   end
 
   describe '#previous_changes' do

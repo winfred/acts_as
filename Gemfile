@@ -10,4 +10,5 @@ group :test do
   gem 'pry'
   gem 'rspec'
   gem 'sqlite3'
+  gem 'strong_parameters'
 end
