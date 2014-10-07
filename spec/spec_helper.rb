@@ -1,7 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'pry'
-require 'strong_parameters'
 
 require 'acts_as'
 

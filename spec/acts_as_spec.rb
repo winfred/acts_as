@@ -120,20 +120,6 @@ describe ActsAs do
     specify { rebel.should_not be_cool }
   end
 
-  describe 'making things attr_accessible' do
-    context 'when strong_parameters is not being used' do
-      it 'automatically makes attrs accessible' do
-        Rebel.accessible_attributes.should include('clan_name')
-      end
-    end
-
-    context 'when strong_parameters is being used' do
-      it 'does not use the attr_accessible api' do
-        RebelWithStrongParams.accessible_attributes.should be_empty
-      end
-    end
-  end
-
   describe '#previous_changes' do
     it 'should account for acted models' do
       rebel.strength = 12

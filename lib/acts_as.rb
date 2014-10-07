@@ -103,11 +103,6 @@ module ActsAs
 
       build_prefix_methods(one_association, prefix)
 
-      unless defined?(ActiveModel::ForbiddenAttributesProtection) && included_modules.include?(ActiveModel::ForbiddenAttributesProtection)
-        attr_accessible *association_fields
-        attr_accessible *prefix.map { |field| "#{one_association}_#{field}" }
-      end
-
       delegate(*(association_fields + association_fields.map { |field| "#{field}=" }), to: one_association)
 
       acts_as_fields[one_association] = association_fields + prefix
