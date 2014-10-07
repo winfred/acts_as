@@ -55,7 +55,7 @@ module ActsAs
       end.keys.first
     end
 
-    def where(opts, *rest)
+    def where(opts = :chain, *rest)
       return self if opts.blank?
       relation = super
       #TODO support nested attribute joins like Guns.where(rebels: {strength: 10}))
