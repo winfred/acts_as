@@ -55,7 +55,7 @@ module ActsAs
       end.keys.first
     end
 
-    def where(opts, *rest)
+    def where(opts = :chain, *rest)
       return self if opts.blank?
       relation = super
       #TODO support nested attribute joins like Guns.where(rebels: {strength: 10}))
@@ -102,11 +102,6 @@ module ActsAs
       association_fields = association_class.columns.map(&:name) - PREFIX - prefix + with
 
       build_prefix_methods(one_association, prefix)
-
-      unless defined?(ActiveModel::ForbiddenAttributesProtection) && included_modules.include?(ActiveModel::ForbiddenAttributesProtection)
-        attr_accessible *association_fields
-        attr_accessible *prefix.map { |field| "#{one_association}_#{field}" }
-      end
 
       delegate(*(association_fields + association_fields.map { |field| "#{field}=" }), to: one_association)
 
