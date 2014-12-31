@@ -6,11 +6,11 @@ class User < ActiveRecord::Base
 end
 
 class RebelProfile < ActiveRecord::Base
-  has_one :rebel
+  has_one :rebel, foreign_key: :profile_id
 end
 
 class ImperialProfile < ActiveRecord::Base
-  has_one :imperial
+  has_one :imperial, foreign_key: :profile_id
 end
 
 class Clan < ActiveRecord::Base
@@ -41,8 +41,7 @@ end
 
 describe ActsAs do
 
-  let(:rebel) { Rebel.create(name: "Leia", clan_name: "Organa") }
-  subject { rebel }
+  subject(:rebel) { Rebel.create(name: "Leia", clan_name: "Organa") }
 
   it 'raises exception for non-ActiveRecord::Base extensions' do
     expect {
