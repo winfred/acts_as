@@ -18,7 +18,9 @@ module ActsAs
   end
 
   def update_column(name, value)
-    if (association = self.class.acts_as_fields.detect { |k,v| v.include?(name.to_s) }.try(:first)).present?
+    if attribute_names.include?(name.to_s)
+      super
+    elsif (association = self.class.acts_as_fields.detect { |k,v| v.include?(name.to_s) }.try(:first)).present?
       send(association).update_column name, value
     else
       super
