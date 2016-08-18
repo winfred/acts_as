@@ -18,7 +18,9 @@ module ActsAs
   end
 
   def update_column(name, value)
-    if (association = self.class.acts_as_fields.detect { |k,v| v.include?(name.to_s) }.try(:first)).present?
+    if attribute_names.include?(name.to_s)
+      super
+    elsif (association = self.class.acts_as_fields.detect { |k,v| v.include?(name.to_s) }.try(:first)).present?
       send(association).update_column name, value
     else
       super
@@ -55,8 +57,7 @@ module ActsAs
       end.keys.first
     end
 
-    def where(opts, *rest)
-      return self if opts.blank?
+    def where(opts = :chain, *rest)
       relation = super
       #TODO support nested attribute joins like Guns.where(rebels: {strength: 10}))
       # for now, only first level joins will happen automagically
@@ -101,26 +102,10 @@ module ActsAs
     def whitelist_and_delegate_fields(association_class, one_association, prefix, with)
       association_fields = association_class.columns.map(&:name) - PREFIX - prefix + with
 
-      build_prefix_methods(one_association, prefix)
-
-      attr_accessible *association_fields
-      attr_accessible *prefix.map { |field| "#{one_association}_#{field}" }
-
       delegate(*(association_fields + association_fields.map { |field| "#{field}=" }), to: one_association)
+      delegate(*(prefix + prefix.map { |field| "#{field}=" }), to: one_association, prefix: true)
 
       acts_as_fields[one_association] = association_fields + prefix
-    end
-
-    def build_prefix_methods(one_association, prefix)
-      prefix.each do |field|
-        define_method("#{one_association}_#{field}") do |*args|
-          send(one_association).send(field, *args)
-        end
-
-        define_method("#{one_association}_#{field}=") do |*args|
-          send(one_association).send("#{field}=", *args)
-        end
-      end
     end
   end
 end
